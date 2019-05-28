@@ -59,7 +59,7 @@ def sgd(f, x0, step, iterations, postprocessing=None, useSaved=False,
     Return:
     x -- the parameter value after SGD finishes
     """
-
+    # f : 최적화 할 함수 , x0 : SGD 가 시작할 첫 포인트 
     # Anneal learning rate every several iterations
     ANNEAL_EVERY = 20000
 
@@ -86,7 +86,8 @@ def sgd(f, x0, step, iterations, postprocessing=None, useSaved=False,
 
         loss = None
         ### YOUR CODE HERE
-
+        loss, gradient = f(x) 
+        x -= gradient * step
         ### END YOUR CODE
 
         x = postprocessing(x)
