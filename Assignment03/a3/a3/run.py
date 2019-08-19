@@ -48,7 +48,8 @@ def train(parser, train_data, dev_data, output_path, batch_size=1024, n_epochs=1
 
 
     ### END YOUR CODE
-
+    optimizer = torch.optim.Adam(parser.model.parameters(), lr=lr)
+    loss_func = torch.nn.CrossEntropyLoss()
     for epoch in range(n_epochs):
         print("Epoch {:} out of {:}".format(epoch + 1, n_epochs))
         dev_UAS = train_for_epoch(parser, train_data, dev_data, optimizer, loss_func, batch_size)
@@ -84,10 +85,16 @@ def train_for_epoch(parser, train_data, dev_data, optimizer, loss_func, batch_si
         for i, (train_x, train_y) in enumerate(minibatches(train_data, batch_size)):
             optimizer.zero_grad()   # remove any baggage in the optimizer
             loss = 0. # store loss for this batch here
+            print(train_x.shape)
             train_x = torch.from_numpy(train_x).long()
             train_y = torch.from_numpy(train_y.nonzero()[1]).long()
 
             ### YOUR CODE HERE (~5-10 lines)
+            pred_y = parser.model(train_x)
+            loss += loss_func(pred_y, train_y) # softmax 가 자동으로 되는건가?
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
             ### TODO:
             ###      1) Run train_x forward through model to produce `logits`
             ###      2) Use the `loss_func` parameter to apply the PyTorch CrossEntropyLoss function.

@@ -7,14 +7,7 @@ Sahil Chopra <schopra8@stanford.edu>
 """
 
 import sys
-'''
-###########
 
-PartialParse 클래스 내부에 있는 
-__init__ 함수와 parse_step 함수 작성하기 
-
-###########
-'''
 class PartialParse(object):
     def __init__(self, sentence):
         """Initializes this partial parse.
@@ -23,7 +16,6 @@ class PartialParse(object):
                                         Your code should not modify the sentence.
         """
         # The sentence being parsed is kept for bookkeeping purposes. Do not alter it in your code.
-        self.sentence = sentence
 
         ### YOUR CODE HERE (3 Lines)
         ### Your code should initialize the following fields:
@@ -37,10 +29,11 @@ class PartialParse(object):
         ###
         ### Note: The root token should be represented with the string "ROOT"
         ###
-        self.stack = []
-        self.buffer = []
-        self.dependencies = []
-        self.stack
+        self.sentence = sentence
+        self.stack = ["ROOT"]
+        self.buffer = list(sentence)
+        self.dependencies = list()
+
         ### END YOUR CODE
 
 
@@ -58,11 +51,23 @@ class PartialParse(object):
         ###         1. Shift
         ###         2. Left Arc
         ###         3. Right Arc
-        if transition == 'S':
-            self.stack
-        a = list()
-        
 
+        print('=================')
+        print(self.stack)
+        print(self.buffer)
+        print(transition)
+        if transition == 'S' and len(self.buffer) != 0:
+            self.stack.append( self.buffer.pop(0) )
+        elif transition == 'LA':
+            first = self.stack.pop(-1)
+            second = self.stack.pop(-1)
+            self.stack.append(first)
+            self.dependencies.append( ( first ,second ))
+        elif transition == 'RA':
+            first = self.stack.pop(-1)
+            second = self.stack.pop(-1)
+            self.stack.append(second)
+            self.dependencies.append( (second, first) )
         ### END YOUR CODE
 
     def parse(self, transitions):
@@ -115,9 +120,19 @@ def minibatch_parse(sentences, model, batch_size):
 
 
     ### END YOUR CODE
-
+    partial_parses = [ PartialParse(sentence) for sentence in sentences ]
+    unfinished_parses = partial_parses[:]
+    while len(unfinished_parses) != 0:
+        mini_parses = [ unfinished_parses.pop(0) for i in range(min(batch_size, len(unfinished_parses))) ]
+        fin_parses = []
+        while len(mini_parses) != 0:
+            pred_result = model.predict(mini_parses)
+            for idx, parse in enumerate(mini_parses):
+                parse.parse_step(pred_result[idx])
+                if len(parse.buffer) == 0 and len(parse.stack) == 1:
+                    fin_parses.append( mini_parses.pop(idx))
+        dependencies += [ parse.dependencies for parse in fin_parses]
     return dependencies
-
 
 def test_step(name, transition, stack, buf, deps,
               ex_stack, ex_buf, ex_deps):
