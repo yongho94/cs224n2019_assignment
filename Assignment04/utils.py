@@ -19,6 +19,7 @@ import torch.nn.functional as F
 
 def pad_sents(sents, pad_token):
     """ Pad list of sentences according to the longest sentence in the batch.
+    가장 긴 문장에 맞춰서 패딩
     @param sents (list[list[str]]): list of sentences, where each sentence
                                     is represented as a list of words
     @param pad_token (str): padding token
@@ -31,7 +32,6 @@ def pad_sents(sents, pad_token):
     ### YOUR CODE HERE (~6 Lines)
     max_len = max([ len(sen) for sen in sents ])
     sents_padded = [ sen + [pad_token] * (max_len - len(sen)) for sen in sents ]
-
     ### END YOUR CODE
 
     return sents_padded
