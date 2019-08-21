@@ -122,7 +122,6 @@ def train(args: Dict):
     model_save_path = args['--save-to']
 
     vocab = Vocab.load(args['--vocab'])
-
     model = NMT(embed_size=int(args['--embed-size']),
                 hidden_size=int(args['--hidden-size']),
                 dropout_rate=float(args['--dropout']),
@@ -154,7 +153,6 @@ def train(args: Dict):
 
     while True:
         epoch += 1
-
         for src_sents, tgt_sents in batch_iter(train_data, batch_size=train_batch_size, shuffle=True):
             train_iter += 1
 
