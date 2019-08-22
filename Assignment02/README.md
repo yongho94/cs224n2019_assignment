@@ -1,1 +1,1 @@
-<img src="http://www.sciweavers.org/tex2img.php?eq=%EA%B0%80%EB%82%98%EB%8B%A4%EB%9D%BC%EB%A7%88%EB%B0%94%EC%82%AC%E3%85%8F%E3%85%87%EC%9E%90%EC%B0%A8%EC%B9%B4%20a%5E2%20%2B%20b%5E2%20%3D%20c%5E2&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="가나다라마바사ㅏㅇ자차카 a^2 + b^2 = c^2" width="103" height="19" />
+
