@@ -108,6 +108,7 @@ class NMT(nn.Module):
         ###     3. Apply the decoder to compute combined-output by calling `self.decode()`
         ###     4. Compute log probability distribution over the target vocabulary using the
         ###        combined_outputs returned by the `self.decode()` function.
+
         enc_hiddens, dec_init_state = self.encode(source_padded, source_lengths)
         enc_masks = self.generate_sent_masks(enc_hiddens, source_lengths)
         combined_outputs = self.decode(enc_hiddens, enc_masks, dec_init_state, target_padded)
@@ -167,7 +168,6 @@ class NMT(nn.Module):
         #     Tensor Permute:
         #         https://pytorch.org/docs/stable/tensors.html#torch.Tensor.permute
 
-        ### END YOUR CODE
         embed_src = self.model_embeddings.source(source_padded)
         # => (src_len, batch_size) -> (src_len, batch_size, emb_dim)
         batch_size = source_padded.size()[1]
@@ -183,6 +183,7 @@ class NMT(nn.Module):
         last_cell = torch.transpose(last_cell, 0, 1).contiguous().view(batch_size, -1)
         last_cell = self.c_projection(last_cell)
         dec_init_state = (last_hidden, last_cell)
+        ### END YOUR CODE
 
         return enc_hiddens, dec_init_state
 
@@ -253,9 +254,10 @@ class NMT(nn.Module):
         enc_hiddens_proj = self.att_projection(enc_hiddens)
         #  (b, src_len, h*2) * (h*2, h) => (b, src_len, h)
         embed_tgt = self.model_embeddings.target(target_padded)
-        time_split_tgt = torch.split(embed_tgt, 1)
+        # (tgt_len, b, e)
+        time_split_tgt = torch.split(embed_tgt, 1, dim=0)
         for Y_t in time_split_tgt:
-            Y_t = torch.squeeze(Y_t)
+            Y_t = torch.squeeze(Y_t, dim=0)
             Ybar_t = torch.cat((Y_t, o_prev), dim=1)
             dec_state, o_t, e_t = self.step(Ybar_t, dec_state, enc_hiddens, enc_hiddens_proj, enc_masks)
             combined_outputs.append(o_t)
@@ -319,7 +321,8 @@ class NMT(nn.Module):
         #         https://pytorch.org/docs/stable/torch.html#torch.squeeze
         dec_state = self.decoder(Ybar_t, dec_state)
         e_t = torch.bmm(torch.unsqueeze(dec_state[0], 1), torch.transpose(enc_hiddens_proj, 1, 2))
-        e_t = torch.squeeze(e_t)
+        # (b, 1, h) * (b, h, src_len) => (b, 1, src_len)
+        e_t = torch.squeeze(e_t, dim=1)
         # END YOUR CODE
 
         # Set e_t to -inf where enc_masks has 1
@@ -356,7 +359,8 @@ class NMT(nn.Module):
         softmax = torch.nn.Softmax(dim=1)
         alpha_t = torch.unsqueeze(softmax(e_t), dim=1)
         a_t = torch.bmm(alpha_t, enc_hiddens)
-        a_t = torch.squeeze(a_t)
+        # a_t = (b, 1, src_len) * (b, src_len, 2h) => (b, 1, 2h)
+        a_t = torch.squeeze(a_t, dim=1)
         U_t = torch.cat((a_t, dec_state[0]), dim=1)
         V_t = self.combined_output_projection(U_t)
         O_t = self.dropout(torch.tanh(V_t))
