@@ -48,8 +48,6 @@ class NMT(nn.Module):
         self.vocab = vocab
 
         ### COPY OVER YOUR CODE FROM ASSIGNMENT 4
-
-
         ### END YOUR CODE FROM ASSIGNMENT 4
 
         if not no_char_decoder:
