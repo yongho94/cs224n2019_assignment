@@ -98,8 +98,6 @@ class ParserModel(nn.Module):
                                 (batch_size, n_features * embed_size)
         """
         ### YOUR CODE HERE (~1-3 Lines)
-        x = self.pretrained_embeddings(t)
-        x = x.view(-1 ,self.n_features * self.embed_size)
         ### TODO:
         ###     1) Use `self.pretrained_embeddings` to lookup the embeddings for the input tokens in `t`.
         ###     2) After you apply the embedding lookup, you will have a tensor shape (batch_size, n_features, embedding_size).
@@ -111,8 +109,8 @@ class ParserModel(nn.Module):
         ###  Please see the following docs for support:
         ###     Embedding Layer: https://pytorch.org/docs/stable/nn.html#torch.nn.Embedding
         ###     View: https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view
-
-
+        x = self.pretrained_embeddings(t)
+        x = x.view(-1 ,self.n_features * self.embed_size)
         ### END YOUR CODE
         return x
 
@@ -137,11 +135,6 @@ class ParserModel(nn.Module):
                                  without applying softmax (batch_size, n_classes)
         """
         ###  YOUR CODE HERE (~3-5 lines)
-        x = self.embedding_lookup(t)
-        h = self.embed_to_hidden(x)
-        h = self.relu(h)
-        h = self.dropout(h)
-        logits = self.hidden_to_logits(h)
         ### TODO:
         ###     1) Apply `self.embedding_lookup` to `t` to get the embeddings
         ###     2) Apply `embed_to_hidden` linear layer to the embeddings
@@ -154,7 +147,10 @@ class ParserModel(nn.Module):
         ###
         ### Please see the following docs for support:
         ###     ReLU: https://pytorch.org/docs/stable/nn.html?highlight=relu#torch.nn.functional.relu
-
-
+        x = self.embedding_lookup(t)
+        h = self.embed_to_hidden(x)
+        h = self.relu(h)
+        h = self.dropout(h)
+        logits = self.hidden_to_logits(h)
         ### END YOUR CODE
         return logits

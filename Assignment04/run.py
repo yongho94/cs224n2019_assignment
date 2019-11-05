@@ -122,6 +122,7 @@ def train(args: Dict):
     model_save_path = args['--save-to']
 
     vocab = Vocab.load(args['--vocab'])
+
     model = NMT(embed_size=int(args['--embed-size']),
                 hidden_size=int(args['--hidden-size']),
                 dropout_rate=float(args['--dropout']),

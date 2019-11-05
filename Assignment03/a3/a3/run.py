@@ -85,7 +85,6 @@ def train_for_epoch(parser, train_data, dev_data, optimizer, loss_func, batch_si
         for i, (train_x, train_y) in enumerate(minibatches(train_data, batch_size)):
             optimizer.zero_grad()   # remove any baggage in the optimizer
             loss = 0. # store loss for this batch here
-            print(train_x.shape)
             train_x = torch.from_numpy(train_x).long()
             train_y = torch.from_numpy(train_y.nonzero()[1]).long()
 
@@ -122,8 +121,8 @@ def train_for_epoch(parser, train_data, dev_data, optimizer, loss_func, batch_si
 
 if __name__ == "__main__":
     # Note: Set debug to False, when training on entire corpus
+    #debug = True
     debug = True
-    # debug = False
 
     assert(torch.__version__ == "1.0.0"),  "Please install torch version 1.0.0"
 
